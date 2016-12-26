@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd   
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd  
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd   
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd   
+   	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- 读数据源配置 -->
+	<bean id="dataSource_read" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${read.db.driverClass}" />
+		<property name="jdbcUrl" value="${read.db.jdbcUrl}" />
+		<property name="user" value="${read.db.user}" />
+		<property name="password" value="${read.db.password}" />
+		<property name="minPoolSize" value="${read.db.minPoolSize}" />
+		<property name="maxPoolSize" value="${read.db.maxPoolSize}" />
+		<property name="maxIdleTime" value="${read.db.maxIdleTime}" />
+		<property name="initialPoolSize" value="${read.db.initialPoolSize}" />
+		<property name="loginTimeout" value="${read.db.loginTimeout}" />
+		<property name="checkoutTimeout" value="${read.db.checkoutTimeout}" />
+		<property name="idleConnectionTestPeriod" value="${read.db.idleConnectionTestPeriod}" />
+		<property name="testConnectionOnCheckin" value="${read.db.testConnectionOnCheckin}" />
+		<property name="automaticTestTable" value="${read.db.automaticTestTable}" />
+	</bean>
+
+	<!-- 为读SqlMap绑定数据源 -->
+	<bean id="sqlSessionFactory_read" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="mapperLocations" value="classpath:**/*ReadMapper.xml" />
+		<property name="dataSource" ref="dataSource_read" />
+	</bean>
+
+	<!-- 对应读mapper类所在包 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="cn.hhd.portal.infrastructure.*.repository.read,cn.hhd.portal.domain.*.repository.read"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_read"></property>
+	</bean>
+</beans>
